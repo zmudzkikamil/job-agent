@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model JobOffer {
+  id           String    @id @default(cuid())
+  source       String // 'nfj' | 'jjit' | 'protocol' | 'pracuj'
+  externalId   String
+  fingerprint  String
+  title        String
+  company      String
+  url          String
+  salaryMin    Int?
+  salaryMax    Int?
+  contractType String? // 'b2b' | 'uop'
+  seniority    String?
+  skills       String[]
+  description  String    @db.Text
+  publishedAt  DateTime?
+  score        Int?
+  scoreReason  String?
+  redFlags     String[]
+  cvHints      Json?
+  rejectedBy   String? // ktory filtr odrzucil
+  sentAt       DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@unique([source, externalId])
+  @@index([fingerprint])
+  @@index([score, sentAt])
+}
+
+model SourceRun {
+  id      String   @id @default(cuid())
+  source  String
+  found   Int
+  created Int
+  error   String?
+  runAt   DateTime @default(now())
+
+  @@index([source, runAt])
+}
